@@ -1,0 +1,51 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.dungnckhnew">
+
+  <!-- Quyền Usage Stats (user phải bật thủ công trong Settings) -->
+  <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS"
+      tools:ignore="ProtectedPermissions" />
+
+  <!-- (Optional) các permission khác nếu cần -->
+  <uses-permission android:name="android.permission.INTERNET" />
+  <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"/>
+
+
+
+  <!-- Chỉ cho phép truy vấn các package quan tâm -->
+  <queries>
+    <package android:name="com.anydesk.anydeskandroid" />
+    <package android:name="com.teamviewer.host.market" />
+    <package android:name="com.teamviewer.quicksupport.market" />
+    <package android:name="com.rsupport.rs.activity.rsupport.a3" />
+    <!-- intent query cho liên kết web nếu cần -->
+    <intent>
+      <action android:name="android.intent.action.VIEW" />
+      <category android:name="android.intent.category.BROWSABLE" />
+      <data android:scheme="https" />
+    </intent>
+  </queries>
+
+  <application
+      android:name=".MainApplication"
+      android:label="@string/app_name"
+      android:icon="@mipmap/ic_launcher"
+      android:roundIcon="@mipmap/ic_launcher_round"
+      android:allowBackup="false"
+      android:theme="@style/AppTheme"
+      android:supportsRtl="true">
+
+    <activity
+        android:name=".MainActivity"
+        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode"
+        android:launchMode="singleTask"
+        android:windowSoftInputMode="adjustResize"
+        android:exported="true">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+    </activity>
+
+  </application>
+</manifest>
