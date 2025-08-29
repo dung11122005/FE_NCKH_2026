@@ -1,19 +1,13 @@
 import React, { useState, useRef } from "react";
-import {
-    View,
-    Text,
-    StyleSheet,
-    Modal,
-    PanResponder,
-    Dimensions,
-} from "react-native";
+import { View, Text, StyleSheet, Modal, PanResponder, Dimensions } from "react-native";
+import { Point, analyzeSwipeBehavior } from "../../utils/SwipeBehaviorCheck";
 
 interface IConnectPointsModalProps {
     visible: boolean;
     onSuccess: (data: {
-        startPoint: { x: number; y: number };
-        endPoint: { x: number; y: number };
-        pathPoints: { x: number; y: number }[];
+        startPoint: Point;
+        endPoint: Point;
+        pathPoints: Point[];
     }) => void;
 }
 
@@ -21,23 +15,22 @@ const { width, height } = Dimensions.get("window");
 
 const ConnectPointsModal = ({ visible, onSuccess }: IConnectPointsModalProps) => {
     const [dragging, setDragging] = useState(false);
-    const [pathPoints, setPathPoints] = useState<{ x: number; y: number }[]>([]);
-    const [startPoint, setStartPoint] = useState<{ x: number; y: number } | null>(null);
+    const [pathPoints, setPathPoints] = useState<Point[]>([]);
+    const [startPoint, setStartPoint] = useState<Point | null>(null);
     const lastTimeRef = useRef(0);
-    const swipeThreshold = 200; // khoảng cách tối thiểu để tính là vuốt lên
-    const timeInterval = 10; // ms
+    const swipeThreshold = 200;
+    const timeInterval = 10;
 
     const panResponder = PanResponder.create({
         onStartShouldSetPanResponder: () => true,
         onPanResponderGrant: (evt) => {
             const touchX = evt.nativeEvent.pageX;
             const touchY = evt.nativeEvent.pageY;
+            const now = Date.now();
             setDragging(true);
-            setStartPoint({ x: touchX, y: touchY });
-            setPathPoints([{ x: touchX, y: touchY }]);
-            lastTimeRef.current = Date.now();
-
-            console.log(`👉 Start Point: x=${touchX}, y=${touchY}`);
+            setStartPoint({ x: touchX, y: touchY, time: now });
+            setPathPoints([{ x: touchX, y: touchY, time: now }]);
+            lastTimeRef.current = now;
         },
         onPanResponderMove: (evt) => {
             if (dragging) {
@@ -45,34 +38,25 @@ const ConnectPointsModal = ({ visible, onSuccess }: IConnectPointsModalProps) =>
                 if (now - lastTimeRef.current >= timeInterval) {
                     const touchX = evt.nativeEvent.pageX;
                     const touchY = evt.nativeEvent.pageY;
-                    setPathPoints((prev) => [...prev, { x: touchX, y: touchY }]);
+                    setPathPoints((prev) => [...prev, { x: touchX, y: touchY, time: now }]);
                     lastTimeRef.current = now;
-
-                    // Log realtime path
-                    // console.log(`✏ Path: x=${touchX}, y=${touchY}`);
                 }
             }
         },
-        onPanResponderRelease: (evt) => {
+        onPanResponderRelease: () => {
             if (dragging && startPoint) {
-                const touchX = evt.nativeEvent.pageX;
-                const touchY = evt.nativeEvent.pageY;
-
-                const endPoint = { x: touchX, y: touchY };
-                const deltaY = startPoint.y - touchY;
-
-                // console.log(`✅ End Point: x=${touchX}, y=${touchY}`);
-                // console.log(`📐 Total Path Points: ${pathPoints.length}`);
+                const endPoint = pathPoints[pathPoints.length - 1];
+                const deltaY = startPoint.y - endPoint.y;
 
                 if (deltaY >= swipeThreshold) {
-                    console.log("✔ Vuốt lên hợp lệ!");
-                    onSuccess({
-                        startPoint,
-                        endPoint,
-                        pathPoints,
-                    });
-                } else {
-                    console.log("❌ Vuốt không đủ hoặc không phải hướng lên");
+                    // Phân tích hành vi
+                    const result = analyzeSwipeBehavior(startPoint, endPoint, pathPoints);
+                    console.log("Straight %:", result.straightPercentage.toFixed(2));
+                    console.log("Avg Speed:", result.avgSpeed.toFixed(4));
+                    console.log("Avg Acceleration:", result.avgAcceleration.toFixed(4));
+                    console.log(result.isBot ? "⚠ Bot detected" : "✅ Human");
+
+                    onSuccess({ startPoint, endPoint, pathPoints });
                 }
 
                 setDragging(false);
@@ -88,7 +72,6 @@ const ConnectPointsModal = ({ visible, onSuccess }: IConnectPointsModalProps) =>
             <View style={styles.overlay} {...panResponder.panHandlers}>
                 <Text style={styles.title}>Vuốt lên để tiếp tục</Text>
 
-                {/* Vẽ đường di chuyển */}
                 {pathPoints.map((p, i) => {
                     if (i === 0) return null;
                     const prev = pathPoints[i - 1];
@@ -105,7 +88,6 @@ const ConnectPointsModal = ({ visible, onSuccess }: IConnectPointsModalProps) =>
                                 top: prev.y,
                                 width: length,
                                 height: 4,
-                                // backgroundColor: "green",
                                 transform: [{ rotate: angle }],
                             }}
                         />

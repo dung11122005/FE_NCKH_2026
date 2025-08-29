@@ -11,6 +11,15 @@ import {
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { AuthStackParamList } from "../../navigation/AuthNavigator";
 import { canLogin, SecurityResult, hasUsagePermission, openUsageSettings } from "../../utils/SecurityService";
+import { callLogin } from "../../services/api";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { setUserLoginInfo } from "../../redux/slice/accountSlice";
+import { AppDispatch, RootState } from "../../redux/store";
+import { useDispatch, useSelector } from "react-redux";
+import { IAccount } from "../../types/backend";
+
+
+
 
 interface IProps extends NativeStackScreenProps<AuthStackParamList, "Login"> {
     onLogin: () => void;
@@ -25,8 +34,13 @@ const LoginScreen = (props: IProps) => {
     const [isBlocked, setIsBlocked] = useState(false);
     const [securityResult, setSecurityResult] = useState<SecurityResult | null>(null);
 
+    const [loadingLogin, setLoadingLogin] = useState(false);
+
     const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
     const { navigation, onLogin } = props;
+
+    const user = useSelector((state: RootState) => state.account.user);
+    const dispatch = useDispatch<AppDispatch>();
 
     useEffect(() => {
         let mounted = true;
@@ -102,6 +116,29 @@ const LoginScreen = (props: IProps) => {
         };
     }, []);
 
+
+    const handleLogin = async () => {
+        if (!email || !password) {
+            Alert.alert("Thiếu thông tin", "Vui lòng nhập email và mật khẩu");
+            return;
+        }
+
+        try {
+            setLoadingLogin(true);
+            const res = await callLogin(email, password);
+            // console.log("res: ", (res.data as unknown as IAccount).access_token)
+            if ((res.data as unknown as IAccount).access_token) {
+                await AsyncStorage.setItem("access_token", String((res.data as unknown as IAccount).access_token));
+                dispatch(setUserLoginInfo((res.data as unknown as IAccount).user));
+                onLogin();
+            }
+        } catch (e: any) {
+            Alert.alert("Đăng nhập thất bại", "Sai tài khoản hoặc mật khẩu");
+        }
+    };
+
+
+
     if (loadingPermissionCheck) {
         return (
             <View style={styles.center}>
@@ -171,9 +208,7 @@ const LoginScreen = (props: IProps) => {
                 {!isBlocked && (
                     <TouchableOpacity
                         style={styles.button}
-                        onPress={async () => {
-                            onLogin();
-                        }}
+                        onPress={() => handleLogin()}
                     >
                         <Text style={styles.buttonText}>Đăng nhập</Text>
                     </TouchableOpacity>
@@ -201,9 +236,9 @@ const styles = StyleSheet.create({
     background: { flex: 1, justifyContent: "center" },
     container: { flex: 1, justifyContent: "center", alignItems: "center", paddingHorizontal: 20 },
     card: { width: "100%", backgroundColor: "rgba(209, 209, 209, 0.14)", borderTopLeftRadius: 16, borderTopRightRadius: 16, padding: 25 },
-    welcome: { fontSize: 30, color: "#fff", textAlign: "left", marginBottom: 30, paddingVertical: 10, lineHeight: 28 },
-    input: { borderBottomWidth: 1, borderBottomColor: "#fff", paddingVertical: 8, marginBottom: 25, color: "#fff" },
-    link: { color: "#fff", textAlign: "center", fontSize: 14, marginTop: 10 },
+    welcome: { fontSize: 35, color: "#fff", textAlign: "left", marginBottom: 30, paddingVertical: 20, lineHeight: 28 },
+    input: { borderBottomWidth: 1, borderBottomColor: "#fff", fontSize: 20, paddingVertical: 8, marginBottom: 25, color: "#fff" },
+    link: { color: "#fff", textAlign: "center", fontSize: 16, marginTop: 10 },
     button: { width: "100%", backgroundColor: "#007bff", borderBottomLeftRadius: 16, borderBottomRightRadius: 16, paddingVertical: 15 },
     buttonText: { color: "#fff", fontWeight: "bold", textAlign: "center", fontSize: 16 }
 });
