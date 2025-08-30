@@ -27,36 +27,25 @@ import iconshare from "../assets/icons/iconshare.png"
 
 export const banks = [
     { id: "1", name: "Vietcombank" },
-    { id: "2", name: "Techcombank" },
     { id: "3", name: "BIDV" },
-    { id: "4", name: "Agribank" },
-    { id: "5", name: "MB Bank" },
     { id: "6", name: "VietinBank" },
-    { id: "7", name: "Agribank" },
+    { id: "4", name: "Agribank" },
+    { id: "2", name: "Techcombank" },
+    { id: "5", name: "MB Bank" },
+    { id: "15", name: "Sacombank" },
     { id: "8", name: "ACB" },
-    { id: "9", name: "SHB" },
+    { id: "13", name: "TPBank" },
     { id: "10", name: "HDBank" },
-    { id: "11", name: "LVBank" },
-    { id: "12", name: "VIB" },
-    { id: "13", name: "SeABank" },
-    { id: "14", name: "TPBank" },
-    { id: "15", name: "MS" },
-    { id: "16", name: "VBSP" },
-    { id: "17", name: "OCB" },
-    { id: "18", name: "Sacombank" },
-    { id: "19", name: "Eximbank" },
-    { id: "20", name: "SCB" },
-    { id: "21", name: "VD" },
-    { id: "22", name: "Nam A Bank" },
-    { id: "23", name: "Woori" },
-    { id: "24", name: "NCB" },
-    { id: "25", name: "ABBANK" },
-    { id: "26", name: "UO" },
-    { id: "27", name: "Bac A Ban" },
-    { id: "28", name: "PVcomBa" },
-    { id: "29", name: "HSB" },
-    { id: "30", name: "Vietbank" },
+    { id: "11", name: "VIB" },
+    { id: "9", name: "SHB" },
+    { id: "12", name: "SeABank" },
+    { id: "14", name: "OCB" },
+    { id: "16", name: "Eximbank" },
+    { id: "17", name: "SCB" },
+    { id: "18", name: "Nam A Bank" },
+    { id: "19", name: "NCB" },
 ];
+
 
 export const recentRecipients = [
     { id: "1", name: "Nguyễn văn A", bankLogo: logoMB },
@@ -118,3 +107,28 @@ export const shoppingItems = [
     { image: vuichoi, label: "Vui chơi" },
     { image: xemphim, label: "Xem phim" },
 ];
+
+
+
+
+export const bankLogos: { [key: string]: any } = {
+    "Vietcombank": require("../assets/logobank/logo-vietcombank.png"),
+    "Techcombank": require("../assets/logobank/logo-techcombank.svg"),
+    "BIDV": require("../assets/logobank/logo-bidv.png"),
+    "Agribank": require("../assets/logobank/logo-aribank.png"),
+    "MB Bank": require("../assets/logobank/logo-MBbank.png"),
+    "VietinBank": require("../assets/logobank/logo-viettinbank.png"),
+    "ACB": require("../assets/logobank/logo-acb.png"),
+    "SHB": require("../assets/logobank/logo-shb.png"),
+    "HDBank": require("../assets/logobank/logo-hdbank.png"),
+    "VIB": require("../assets/logobank/logo-vib.png"),
+    "SeABank": require("../assets/logobank/logo-seabank.jpg"),
+    "TPBank": require("../assets/logobank/logo-TP.jpg"),
+    "OCB": require("../assets/logobank/logo-ocb.png"),
+    "Sacombank": require("../assets/logobank/logo-sacombank.jpg"),
+    "Eximbank": require("../assets/logobank/logo-eximbank.jpg"),
+    "SCB": require("../assets/logobank/logo-vietcombank.png"),
+    "Nam A Bank": require("../assets/logobank/logo-namabank.jpg"),
+    "NCB": require("../assets/logobank/logo-ncb.jpg"),
+};
+
