@@ -1,4 +1,4 @@
-import { IAccount, IBackendRes, IGetAccount, IUser } from "../types/backend";
+import { IAccount, IBackendRes, IBankAccount, IGetAccount, IUser } from "../types/backend";
 import axios from "./axios-customize";
 
 /**
@@ -45,4 +45,14 @@ export const callRefreshToken = () => {
 // Đăng xuất
 export const callLogout = () => {
     return axios.post<IBackendRes<string>>("/api/v1/auth/logout");
+};
+
+
+export const callBankAccountUser = () => {
+    return axios.get<IBackendRes<IBankAccount[]>>("/api/v1/bankaccount");
+};
+
+
+export const callBankAccountNumber = (number: string) => {
+    return axios.get<IBackendRes<IBankAccount>>(`/api/v1/bankaccount/${number}`);
 };

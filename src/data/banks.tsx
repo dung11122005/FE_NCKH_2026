@@ -113,7 +113,7 @@ export const shoppingItems = [
 
 export const bankLogos: { [key: string]: any } = {
     "Vietcombank": require("../assets/logobank/logo-vietcombank.png"),
-    "Techcombank": require("../assets/logobank/logo-techcombank.svg"),
+    "Techcombank": require("../assets/logobank/logo-techcombank.png"),
     "BIDV": require("../assets/logobank/logo-bidv.png"),
     "Agribank": require("../assets/logobank/logo-aribank.png"),
     "MB Bank": require("../assets/logobank/logo-MBbank.png"),

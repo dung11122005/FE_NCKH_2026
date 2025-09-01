@@ -48,4 +48,13 @@ export interface IAccount {
 }
 
 
+
 export interface IGetAccount extends Omit<IAccount, "access_token"> { }
+
+
+
+export interface IBankAccount {
+    bankName: string;
+    accountNumber: string;
+    accountHolder: string;
+}

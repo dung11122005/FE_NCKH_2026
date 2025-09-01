@@ -12,6 +12,9 @@ import com.facebook.react.bridge.*
 import com.facebook.react.module.annotations.ReactModule
 import java.io.File
 import android.util.Log
+import java.util.Date
+import android.app.usage.UsageEvents
+
 
 
 @ReactModule(name = SecurityCheckerModule.NAME)
@@ -84,28 +87,49 @@ class SecurityCheckerModule(reactContext: ReactApplicationContext) : ReactContex
                 "com.teamviewer.host.market",
                 "com.anydesk.anydeskandroid",
                 "com.rsupport.rs.activity.rsupport.a3",
-                "com.sand.airdroid",                 // AirDroid
-                "com.vysor",                         // Vysor
-                "com.splashtop.remote",              // Splashtop
-                "com.google.chromeremotedesktop",    // Chrome Remote Desktop
-                "com.remodroid",                      // RemoDroid
-                "com.anyviewer.remote",               // AnyViewer
-                "com.ammyy.admin",                    // Ammyy Admin
-                "com.parallels.parallels.access",     // Parallels Access
-                "com.teamviewer.quicksupport.market", // TeamViewer QuickSupport
-                "com.remotecontrol.pc.remote",        // Remote Control PC
-                "com.remote.mouse.server",            // Remote Mouse
+                "com.sand.airdroid",
+                "com.vysor",
+                "com.splashtop.remote",
+                "com.google.chromeremotedesktop",
+                "com.remodroid",
+                "com.anyviewer.remote",
+                "com.ammyy.admin",
+                "com.parallels.parallels.access",
+                "com.teamviewer.quicksupport.market",
+                "com.remotecontrol.pc.remote",
+                "com.remote.mouse.server",
                 "com.tightvnc.viewer.android"
             )
+
             val usm = reactApplicationContext.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
             val endTime = System.currentTimeMillis()
-            val beginTime = endTime - 1000 * 15 // 15 giây
-            val usageStats = usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, beginTime, endTime) ?: return false
-            return usageStats.any { suspiciousPackages.contains(it.packageName) }
+            val beginTime = endTime - 1000 * 40 // 5 phút gần nhất
+
+            val events = usm.queryEvents(beginTime, endTime)
+            val event = UsageEvents.Event()
+
+            val detectedApps = mutableSetOf<String>()
+
+            while (events.hasNextEvent()) {
+                events.getNextEvent(event)
+                if (suspiciousPackages.contains(event.packageName)) {
+                    detectedApps.add(event.packageName)
+                }
+            }
+
+            if (detectedApps.isNotEmpty()) {
+                Log.w("CHECK_APP", "⚠️ Phát hiện app khả nghi trong 5 phút: $detectedApps")
+                return true
+            }
+
+            return false
         } catch (e: Exception) {
+            Log.e("CHECK_APP", "Error: ${e.message}")
             return false
         }
     }
+
+
 
     private fun hasNonPlayApp(context: Context): Boolean {
         val pm = context.packageManager

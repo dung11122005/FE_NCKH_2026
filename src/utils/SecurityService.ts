@@ -60,7 +60,7 @@ export const canLogin = async (): Promise<{ allowed: boolean; securityResult: Se
     const securityResult = await checkSecurity();
 
 
-    // console.log(securityResult);
+    console.log(securityResult);
 
 
     const allowed = !(
