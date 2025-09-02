@@ -32,7 +32,14 @@ interface IProps {
 const ConfirmPaymentSTK = (props: IProps) => {
 
     const { route } = props;
-    const { selectedBank, accountNumber, amount, description } = route.params;
+    const { accountHolder,
+        selectedBank,
+        accountNumber,
+        receivingAccountHolder,
+        receivingSelectedBank,
+        receivingAccountNumber,
+        amount,
+        description } = route.params;
 
     const navigation = useNavigation<PayScreenProp>();
 
@@ -43,14 +50,14 @@ const ConfirmPaymentSTK = (props: IProps) => {
     // const amount = 5000000;
     // const description = "HOANG TAN DUNG chuyen tien";
     const sender = {
-        name: "HOANG TAN DUNG",
-        account: "0909123456",
-        bank: "MB Bank",
-    };
-    const receiver = {
-        name: "NGUYEN VAN A",
+        name: accountHolder,
         account: accountNumber,
         bank: selectedBank,
+    };
+    const receiver = {
+        name: receivingAccountHolder,
+        account: receivingAccountNumber,
+        bank: receivingSelectedBank,
     };
     const fee = "Miễn phí";
     const method = "Chuyển nhanh 24/7";
@@ -158,7 +165,7 @@ const ConfirmPaymentSTK = (props: IProps) => {
                         setOtpVisible(false);
                         navigation.navigate("PaymentSuccess", {
                             amount: amount,
-                            receiver: { name: "Nguyễn Văn A", account: accountNumber, bank: selectedBank },
+                            receiver: { name: receivingAccountHolder, account: receivingAccountNumber, bank: receivingSelectedBank },
                             description: description
                         });
                     }

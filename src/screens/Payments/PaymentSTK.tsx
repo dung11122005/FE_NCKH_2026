@@ -33,8 +33,12 @@ interface IItem {
 }
 
 interface IAccount {
+    accountHolder: string;
     selectedBank: string;
     accountNumber: string;
+    receivingAccountHolder: string;
+    receivingSelectedBank: string;
+    receivingAccountNumber: string;
     amount: string;
     description: string;
 }
@@ -58,7 +62,6 @@ const PaymentSTK = () => {
 
 
     const [accountHolder, setAccountHolder] = useState<string>("")
-    const [description, setDescription] = useState(`${accountHolder} chuyen tien`);
     const [receivingAccountHolder, setReceivingAccountHolder] = useState<string>("")
 
     const [isBankModalVisible, setBankModalVisible] = useState(false);
@@ -75,19 +78,35 @@ const PaymentSTK = () => {
 
     // Tiếp tục
     const handleContinue = () => {
-        if (!selectedAccount || !selectedBankReceive || !accountNumberReceive || !amount || !description) {
+        if (!selectedAccount) {
+            alert("Đang tải thông tin tài khoản, vui lòng đợi");
+            return;
+        }
+
+        if (
+            !selectedBankReceive.trim() ||
+            !accountNumberReceive.trim() ||
+            !amount.trim() ||
+            !description.trim()
+        ) {
             alert("Vui lòng nhập đầy đủ thông tin");
             return;
         }
 
         const data: IAccount = {
-            selectedBank: selectedBankReceive,
-            accountNumber: accountNumberReceive,
-            amount,
-            description,
+            accountHolder: selectedAccount.accountHolder,
+            selectedBank: selectedAccount.bankName,
+            accountNumber: selectedAccount.accountNumber,
+            receivingAccountHolder: receivingAccountHolder,
+            receivingSelectedBank: selectedBankReceive,
+            receivingAccountNumber: accountNumberReceive,
+            amount: amount,
+            description: description
         };
         navigation.navigate("ConfirmPaymentSTK", data);
     };
+
+
 
     // 1. Khi load tài khoản người dùng (nguồn chuyển tiền)
     useEffect(() => {
@@ -99,7 +118,10 @@ const PaymentSTK = () => {
                     setAccounts(apiRes.data);
                     const firstAccount = apiRes.data[0];
                     setSelectedAccount(firstAccount); // set selectedAccount
-                    setAccountHolder(firstAccount.accountHolder || ""); // set luôn tên người chuyển
+                    if (selectedAccount) {
+                        setAccountHolder(selectedAccount?.accountHolder); // set luôn tên người chuyển
+                    }
+                    setDescription(`${accountHolder} chuyen tien`)
                 }
             } catch (error: any) {
                 console.error("Lỗi khi lấy tài khoản:", error);
@@ -125,20 +147,12 @@ const PaymentSTK = () => {
     useEffect(() => {
         if (selectedAccount) {
             setAccountHolder(selectedAccount.accountHolder || "");
+            setDescription(`${accountHolder} chuyen tien`)
         }
     }, [selectedAccount]);
 
-    // 3. Tự động cập nhật description khi accountHolder thay đổi
-    useEffect(() => {
-        if (accountHolder) {
-            setDescription(`${accountHolder} chuyển tiền`);
-        } else {
-            setDescription("");
-        }
-    }, [accountHolder]);
 
-
-
+    const [description, setDescription] = useState(`${accountHolder} chuyen tien`);
 
     const handleReceivingBank = async (number: string) => {
         if (!number) return;

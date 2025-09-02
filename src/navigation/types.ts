@@ -28,8 +28,12 @@ export type PaymentStackParamList = {
     PaymentMain: undefined;
     PaymentSTK: { id: string } | undefined;
     ConfirmPaymentSTK: {
+        accountHolder: string;
         selectedBank: string;
         accountNumber: string;
+        receivingAccountHolder: string;
+        receivingSelectedBank: string;
+        receivingAccountNumber: string;
         amount: string;
         description: string;
     };
