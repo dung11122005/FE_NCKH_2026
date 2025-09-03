@@ -40,7 +40,7 @@ export function analyzeSwipeBehavior(
     startPoint: Point,
     endPoint: Point,
     pathPoints: Point[],
-    straightThreshold: number = 1.5,
+    straightThreshold: number = 1,
     straightPercentageThreshold: number = 65,
     avgAccelerationThreshold: number = 0.005,
     speedJitterThreshold: number = 0.015

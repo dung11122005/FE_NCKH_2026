@@ -8,6 +8,7 @@ import {
     SafeAreaView,
     ScrollView,
     Image,
+    Alert,
 } from "react-native";
 import CustomHeader from "../../components/button/CustomHeader";
 import { Ionicons } from "@expo/vector-icons";
@@ -135,7 +136,7 @@ const PaymentSTK = () => {
                         })
                     );
                 } else {
-                    alert("Không thể lấy thông tin tài khoản. Vui lòng thử lại sau.");
+                    Alert.alert("Không tìm thấy", "không tìm thấy người dùng")
                 }
             }
         };
@@ -143,13 +144,13 @@ const PaymentSTK = () => {
         fetchAccounts();
     }, []);
 
-    // 2. Khi người dùng chọn tài khoản khác
-    useEffect(() => {
-        if (selectedAccount) {
-            setAccountHolder(selectedAccount.accountHolder || "");
-            setDescription(`${accountHolder} chuyen tien`)
-        }
-    }, [selectedAccount]);
+    // // 2. Khi người dùng chọn tài khoản khác
+    // useEffect(() => {
+    //     if (selectedAccount) {
+    //         setAccountHolder(selectedAccount.accountHolder || "");
+    //         setDescription(`${accountHolder} chuyen tien`)
+    //     }
+    // }, [selectedAccount]);
 
 
     const [description, setDescription] = useState(`${accountHolder} chuyen tien`);
@@ -169,12 +170,12 @@ const PaymentSTK = () => {
                 // Không tìm thấy STK
                 setSelectedBankReceive("");
                 setAccountHolder("");
-                alert("Không tìm thấy tài khoản này.");
+                Alert.alert("Không tìm thấy", "không tìm thấy người dùng")
             }
         } catch (err) {
             setSelectedBankReceive("");
             setAccountHolder("");
-            alert("Không thể kiểm tra tài khoản. Vui lòng thử lại.");
+            Alert.alert("Không tìm thấy", "không tìm thấy người dùng")
         }
     };
 
